@@ -6,11 +6,13 @@ import management.teacher_management_api.domain.Utils;
 import management.teacher_management_api.infrastructure.hibernate.entities.Post;
 import management.teacher_management_api.ports.persistence.PostsDao;
 import org.hibernate.type.IntegerType;
+import org.hibernate.type.LongType;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManagerFactory;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 @Transactional
@@ -43,6 +45,17 @@ public class PostsDaoImpl implements PostsDao {
     @Override
     public void delete(long userId) {
         val session = Utils.currentSession(entityManagerFactory);
+
+        val postsIds =
+                (List<Long>)
+                        session.createSQLQuery("select id from posts where user_id = :userId")
+                                .addScalar("id", LongType.INSTANCE)
+                                .setParameter("userId", userId)
+                                .list();
+
+        session.createSQLQuery("delete from posts_views where post_id in (:postsIds)")
+                .setParameter("postsIds", postsIds)
+                .executeUpdate();
 
         session.createSQLQuery("delete from posts where user_id = :userId")
                 .setParameter("userId", userId)
