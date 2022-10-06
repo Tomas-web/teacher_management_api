@@ -1,3 +1,16 @@
+buildscript {
+    repositories {
+        mavenCentral()
+
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+    }
+}
+
 plugins {
     id 'org.springframework.boot' version '2.6.4'
     id 'org.flywaydb.flyway' version '7.6.0'
@@ -39,6 +52,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'com.auth0:java-jwt:3.18.2'
     implementation 'org.flywaydb:flyway-core'
     implementation 'com.auth0:jwks-rsa:0.21.1'

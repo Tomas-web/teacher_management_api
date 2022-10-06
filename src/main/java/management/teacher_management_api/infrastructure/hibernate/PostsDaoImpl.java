@@ -5,7 +5,6 @@ import lombok.val;
 import management.teacher_management_api.domain.Utils;
 import management.teacher_management_api.infrastructure.hibernate.entities.Post;
 import management.teacher_management_api.ports.persistence.PostsDao;
-import org.hibernate.type.IntegerType;
 import org.hibernate.type.LongType;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
