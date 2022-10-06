@@ -9,6 +9,8 @@ public interface UsersDao {
 
     User findByExternalId(String externalId);
 
+    List<User> findTeachersWithoutConversationStarted(long userId, String q);
+
     String getSpeciality(long userId);
 
     Double getPrice(long userId);

@@ -41,6 +41,21 @@ public class UsersDaoImpl implements UsersDao {
     }
 
     @Override
+    public List<User> findTeachersWithoutConversationStarted(long userId, String q) {
+        val session = Utils.currentSession(entityManagerFactory);
+
+        return (List<User>)
+                session.createSQLQuery(
+                                "select u.* from users u where role_id = :roleId and full_name like :q "
+                                        + "and not exists(select * from conversations where receiver_id = :receiverId and sender_id = u.id) limit 10")
+                        .addEntity(User.class)
+                        .setParameter("roleId", UserRole.TEACHER.getId())
+                        .setParameter("receiverId", userId)
+                        .setParameter("q", "%" + q + "%")
+                        .list();
+    }
+
+    @Override
     public String getSpeciality(long userId) {
         val session = Utils.currentSession(entityManagerFactory);
 
