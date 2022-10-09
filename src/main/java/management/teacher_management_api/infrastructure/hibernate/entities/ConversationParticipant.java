@@ -8,17 +8,21 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "conversations")
-public class Conversation {
-
+@Table(name = "conversations_participants")
+public class ConversationParticipant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column
-    private LocalDateTime createdAt;
+    private long participantId;
+
+    @Column
+    private long conversationId;
+
+    @Column
+    private boolean isSeen;
 }

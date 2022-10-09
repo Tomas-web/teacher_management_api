@@ -46,8 +46,10 @@ public class UsersDaoImpl implements UsersDao {
 
         return (List<User>)
                 session.createSQLQuery(
-                                "select u.* from users u where role_id = :roleId and full_name like :q "
-                                        + "and not exists(select * from conversations where receiver_id = :receiverId and sender_id = u.id) limit 10")
+                                "select u.* from users u where role_id = :roleId and u.id <> :receiverId and full_name like :q "
+                                        + "and not exists(select * from conversations c where " +
+                                        "(select count(*) from conversations_participants where c.id = conversation_id and (participant_id = :receiverId or participant_id = u.id)) = 2) " +
+                                        "limit 10")
                         .addEntity(User.class)
                         .setParameter("roleId", UserRole.TEACHER.getId())
                         .setParameter("receiverId", userId)

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class MarkConversationSeenUsecase {
     private final ConversationsDao conversationsDao;
 
-    public void execute(long conversationId) {
-        conversationsDao.markSeen(conversationId);
+    public void execute(long conversationId, long userId) {
+        conversationsDao.markSeen(conversationId, userId);
     }
 }

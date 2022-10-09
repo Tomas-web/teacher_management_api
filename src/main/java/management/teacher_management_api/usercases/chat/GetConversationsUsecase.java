@@ -5,6 +5,7 @@ import lombok.val;
 import management.teacher_management_api.drivers.api.payloads.chat.ChatUser;
 import management.teacher_management_api.drivers.api.payloads.chat.Conversation;
 import management.teacher_management_api.ports.persistence.ConversationsDao;
+import management.teacher_management_api.ports.persistence.ConversationsMessagesDao;
 import management.teacher_management_api.ports.persistence.UsersDao;
 import management.teacher_management_api.utils.DateTimeUtils;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GetConversationsUsecase {
     private final ConversationsDao conversationsDao;
+    private final ConversationsMessagesDao conversationsMessagesDao;
     private final UsersDao usersDao;
 
     public List<Conversation> execute(long userId) {
@@ -25,8 +27,11 @@ public class GetConversationsUsecase {
                 .map(
                         conversation -> {
                             val latestMessage =
-                                    conversationsDao.getLatestMessage(conversation.getId());
-                            val sender = usersDao.findById(conversation.getSenderId());
+                                    conversationsMessagesDao.getLatestMessage(conversation.getId());
+                            val sender =
+                                    usersDao.findById(
+                                            conversationsDao.getSecondParticipantId(
+                                                    conversation.getId(), userId));
                             return Conversation.builder()
                                     .id(Long.toString(conversation.getId()))
                                     .user(
@@ -39,7 +44,7 @@ public class GetConversationsUsecase {
                                     .sentAt(
                                             DateTimeUtils.toOffsetDateTime(
                                                     latestMessage.getCreatedAt()))
-                                    .isSeen(conversation.isSeen())
+                                    .isSeen(conversationsDao.isSeen(conversation.getId(), userId))
                                     .build();
                         })
                 .collect(Collectors.toList());

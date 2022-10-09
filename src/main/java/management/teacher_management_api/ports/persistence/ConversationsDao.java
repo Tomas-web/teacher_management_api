@@ -1,18 +1,21 @@
 package management.teacher_management_api.ports.persistence;
 
 import management.teacher_management_api.infrastructure.hibernate.entities.Conversation;
-import management.teacher_management_api.infrastructure.hibernate.entities.ConversationMessage;
 
 import java.util.List;
 
 public interface ConversationsDao {
+    Conversation find(long receiverId, long senderId);
+
     List<Conversation> listAll(long receiverId);
 
-    ConversationMessage getLatestMessage(long conversationId);
+    long getSecondParticipantId(long conversationId, long participantId);
 
-    void markSeen(long conversationId);
+    boolean isSeen(long conversationId, long participantId);
 
-    Conversation create(long receiverId, long senderId, boolean isSeen);
+    void markSeen(long conversationId, long userId);
 
-    void saveMessage(long conversationId, long senderId, String message);
+    void markUnseen(long conversationId, long userId);
+
+    Conversation create(long receiverId, long senderId);
 }
