@@ -1,6 +1,7 @@
 package management.teacher_management_api.drivers.api;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import management.teacher_management_api.domain.services.MessageProcessingService;
 import management.teacher_management_api.drivers.api.converters.UserResolver;
@@ -8,6 +9,7 @@ import management.teacher_management_api.drivers.api.payloads.chat.ChatMessagePa
 import management.teacher_management_api.drivers.api.payloads.chat.ChatMessagesWithPages;
 import management.teacher_management_api.drivers.api.payloads.chat.Conversation;
 import management.teacher_management_api.drivers.api.payloads.users.User;
+import management.teacher_management_api.usercases.chat.FindConversationForUserUsecase;
 import management.teacher_management_api.usercases.chat.GetConversationMessagesUsecase;
 import management.teacher_management_api.usercases.chat.GetConversationUsecase;
 import management.teacher_management_api.usercases.chat.GetConversationsUsecase;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Controller
 @CrossOrigin
 @RequiredArgsConstructor
@@ -39,6 +42,7 @@ public class ChatController {
     private final GetConversationMessagesUsecase getConversationMessagesUsecase;
     private final MessageProcessingService messageProcessingService;
     private final GetConversationUsecase getConversationUsecase;
+    private final FindConversationForUserUsecase findConversationForUserUsecase;
 
     @MessageMapping("/private-message")
     public ChatMessagePayload chat(@Payload ChatMessagePayload message) {
@@ -96,5 +100,20 @@ public class ChatController {
 
         markConversationSeenUsecase.execute(Long.parseLong(conversationId), userId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(path = "/users/{user_id}/chat/conversation")
+    public ResponseEntity<Conversation> findConversationForUser(
+            @PathVariable("user_id") String senderId) {
+        val userId = ApiUtils.getAuthenticatedUserId();
+
+        try {
+            val result = findConversationForUserUsecase.execute(userId, Long.parseLong(senderId));
+
+            return ResponseEntity.ok(result);
+        } catch (Exception ex) {
+            log.error("Unhandled exception", ex);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

@@ -14,19 +14,19 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class GetConversationUsecase {
+public class FindConversationForUserUsecase {
     private final ConversationsDao conversationsDao;
-    private final ConversationsMessagesDao conversationsMessagesDao;
     private final UsersDao usersDao;
     private final CallRoomsDao callRoomsDao;
+    private final ConversationsMessagesDao conversationsMessagesDao;
 
-    public Conversation execute(long conversationId, long userId) {
-        val latestMessage = conversationsMessagesDao.getLatestMessage(conversationId);
-        val sender =
-                usersDao.findById(conversationsDao.getSecondParticipantId(conversationId, userId));
+    public Conversation execute(long userId, long senderId) {
+        val conversation = conversationsDao.find(userId, senderId);
+        val latestMessage = conversationsMessagesDao.getLatestMessage(conversation.getId());
+        val sender = usersDao.findById(senderId);
         val callRoom = callRoomsDao.find(sender.getId(), userId);
         return Conversation.builder()
-                .id(Long.toString(conversationId))
+                .id(Long.toString(conversation.getId()))
                 .user(
                         ChatUser.builder()
                                 .id(Long.toString(sender.getId()))
@@ -43,7 +43,7 @@ public class GetConversationUsecase {
                                 : null)
                 .latestMessage(latestMessage.getMessage())
                 .sentAt(DateTimeUtils.toOffsetDateTime(latestMessage.getCreatedAt()))
-                .isSeen(conversationsDao.isSeen(conversationId, userId))
+                .isSeen(conversationsDao.isSeen(conversation.getId(), userId))
                 .build();
     }
 }

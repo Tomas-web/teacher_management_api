@@ -12,5 +12,6 @@ public class Conversation {
     private final ChatUser user;
     private final String latestMessage;
     private final boolean isSeen;
+    private final CallRoomDetails callRoomDetails;
     private final OffsetDateTime sentAt;
 }
