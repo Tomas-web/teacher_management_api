@@ -11,6 +11,7 @@ import management.teacher_management_api.drivers.api.payloads.GetPostViewsRespon
 import management.teacher_management_api.drivers.api.payloads.GetStudentHomeworksResponse;
 import management.teacher_management_api.drivers.api.payloads.GetTeacherHomeworksResponse;
 import management.teacher_management_api.drivers.api.payloads.Homework;
+import management.teacher_management_api.drivers.api.payloads.HomeworkUpload;
 import management.teacher_management_api.drivers.api.payloads.LessonReservation;
 import management.teacher_management_api.drivers.api.payloads.StudentLessonReservationsResponse;
 import management.teacher_management_api.drivers.api.payloads.UpdateProfileRequest;
@@ -260,6 +261,35 @@ public class ProfileController {
                                                                                             homework
                                                                                                     .getStudentId()))
                                                                     .content(homework.getContent())
+                                                                    .uploads(
+                                                                            homework
+                                                                                    .getUploads()
+                                                                                    .stream()
+                                                                                    .map(
+                                                                                            upload ->
+                                                                                                    HomeworkUpload
+                                                                                                            .builder()
+                                                                                                            .fileName(
+                                                                                                                    upload
+                                                                                                                            .getFileName())
+                                                                                                            .uploadedAt(
+                                                                                                                    DateTimeUtils
+                                                                                                                            .toOffsetDateTime(
+                                                                                                                                    upload
+                                                                                                                                            .getUploadedAt()))
+                                                                                                            .fileSize(
+                                                                                                                    upload
+                                                                                                                            .getFileSize())
+                                                                                                            .downloadUri(
+                                                                                                                    upload
+                                                                                                                            .getDownloadUri())
+                                                                                                            .fileType(
+                                                                                                                    upload
+                                                                                                                            .getFileType())
+                                                                                                            .build())
+                                                                                    .collect(
+                                                                                            Collectors
+                                                                                                    .toList()))
                                                                     .deadline(
                                                                             DateTimeUtils
                                                                                     .toOffsetDateTime(
@@ -310,6 +340,35 @@ public class ProfileController {
                                                                                             homework
                                                                                                     .getStudentId()))
                                                                     .content(homework.getContent())
+                                                                    .uploads(
+                                                                            homework
+                                                                                    .getUploads()
+                                                                                    .stream()
+                                                                                    .map(
+                                                                                            upload ->
+                                                                                                    HomeworkUpload
+                                                                                                            .builder()
+                                                                                                            .fileName(
+                                                                                                                    upload
+                                                                                                                            .getFileName())
+                                                                                                            .uploadedAt(
+                                                                                                                    DateTimeUtils
+                                                                                                                            .toOffsetDateTime(
+                                                                                                                                    upload
+                                                                                                                                            .getUploadedAt()))
+                                                                                                            .fileSize(
+                                                                                                                    upload
+                                                                                                                            .getFileSize())
+                                                                                                            .downloadUri(
+                                                                                                                    upload
+                                                                                                                            .getDownloadUri())
+                                                                                                            .fileType(
+                                                                                                                    upload
+                                                                                                                            .getFileType())
+                                                                                                            .build())
+                                                                                    .collect(
+                                                                                            Collectors
+                                                                                                    .toList()))
                                                                     .deadline(
                                                                             DateTimeUtils
                                                                                     .toOffsetDateTime(
