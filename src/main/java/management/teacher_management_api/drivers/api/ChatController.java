@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import management.teacher_management_api.domain.services.MessageProcessingService;
 import management.teacher_management_api.drivers.api.converters.UserResolver;
+import management.teacher_management_api.drivers.api.payloads.calls.PrivateCallUpdatedPayload;
 import management.teacher_management_api.drivers.api.payloads.chat.ChatMessagePayload;
 import management.teacher_management_api.drivers.api.payloads.chat.ChatMessagesWithPages;
 import management.teacher_management_api.drivers.api.payloads.chat.Conversation;
@@ -52,6 +53,14 @@ public class ChatController {
         simpMessagingTemplate.convertAndSendToUser(
                 message.getSenderId(), "/private", newMessage); // /user/senderId/private
         return message;
+    }
+
+    @MessageMapping("/private-call")
+    public PrivateCallUpdatedPayload call(@Payload PrivateCallUpdatedPayload callUpdatedPayload) {
+        simpMessagingTemplate.convertAndSendToUser(
+                callUpdatedPayload.getTargetId(), "/call", callUpdatedPayload);
+
+        return callUpdatedPayload;
     }
 
     @GetMapping(path = "/chat/conversations")
