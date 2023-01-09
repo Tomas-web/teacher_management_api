@@ -81,8 +81,7 @@ public class FileController {
         try {
             // Load file as Resource
             Resource resource =
-                    fileStorageService.loadFileAsResource(
-                            userId, Long.parseLong(homeworkId), fileName);
+                    fileStorageService.loadFileAsResource(Long.parseLong(homeworkId), fileName);
 
             // Try to determine file's content type
             String contentType = null;

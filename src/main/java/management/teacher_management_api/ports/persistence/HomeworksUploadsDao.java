@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface HomeworksUploadsDao {
     HomeworkUpload find(long homeworkId, long userId, String fileName);
+    HomeworkUpload findByName(long homeworkId, String fileName);
     List<HomeworkUpload> listFiles(long homeworkId);
     void delete(long homeworkId, long userId, String fileName);
     void save(long homeworkId, long userId, String fileName, String fileType, long fileSize);

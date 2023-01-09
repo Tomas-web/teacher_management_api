@@ -14,8 +14,15 @@ public class ValidateCallRoomUsecase {
             long userId, long callerId, long targetId, String token, String channelName) {
         val callRoom = callRoomsDao.find(callerId, targetId);
 
-        return callRoom != null
-                && callRoom.getToken().equals(token)
+        if (callRoom == null) {
+            return false;
+        }
+
+        if (callRoom.getCallerId() != userId && callRoom.getTargetId() != userId) {
+            return false;
+        }
+
+        return callRoom.getToken().equals(token)
                 && callRoom.getName().equals(channelName);
     }
 }

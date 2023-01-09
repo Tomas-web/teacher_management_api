@@ -33,6 +33,19 @@ public class HomeworksUploadsDaoImpl implements HomeworksUploadsDao {
     }
 
     @Override
+    public HomeworkUpload findByName(long homeworkId, String fileName) {
+        val session = Utils.currentSession(entityManagerFactory);
+
+        return (HomeworkUpload)
+                session.createSQLQuery(
+                                "select * from homeworks_uploads where homework_id = :homeworkId and file_name = :fileName limit 1")
+                        .addEntity(HomeworkUpload.class)
+                        .setParameter("homeworkId", homeworkId)
+                        .setParameter("fileName", fileName)
+                        .uniqueResult();
+    }
+
+    @Override
     public List<HomeworkUpload> listFiles(long homeworkId) {
         val session = Utils.currentSession(entityManagerFactory);
 

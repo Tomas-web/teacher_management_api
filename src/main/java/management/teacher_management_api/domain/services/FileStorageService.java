@@ -6,6 +6,7 @@ import lombok.val;
 import management.teacher_management_api.drivers.api.exceptions.FileStorageException;
 import management.teacher_management_api.drivers.api.exceptions.NotFoundException;
 import management.teacher_management_api.infrastructure.spring.FileStorageProperties;
+import management.teacher_management_api.ports.persistence.HomeworksUploadsDao;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class FileStorageService {
     private final FileStorageProperties fileStorageProperties;
+    private final HomeworksUploadsDao homeworksUploadsDao;
 
     public String storeFile(long userId, long homeworkId, MultipartFile file) {
         // Normalize file name
@@ -59,8 +61,15 @@ public class FileStorageService {
         }
     }
 
-    public Resource loadFileAsResource(long userId, long homeworkId, String fileName) {
-        val fileStorageLocation = getFileStorageLocation(userId, homeworkId);
+    public Resource loadFileAsResource(long homeworkId, String fileName) {
+        val homeworkUpload = homeworksUploadsDao.findByName(homeworkId, fileName);
+
+        if (homeworkUpload == null) {
+            log.error("File not found {}", fileName);
+            throw new NotFoundException();
+        }
+
+        val fileStorageLocation = getFileStorageLocation(homeworkUpload.getUserId(), homeworkId);
 
         try {
             Path filePath = fileStorageLocation.resolve(fileName).normalize();
@@ -78,9 +87,13 @@ public class FileStorageService {
     }
 
     private Path getFileStorageLocation(long userId, long homeworkId) {
-        val pathString = fileStorageProperties.getUploadDir() + "\\homework" + homeworkId + "\\user" + userId;
-        val fileStorageLocation =
-                Paths.get(pathString).toAbsolutePath().normalize();
+        val pathString =
+                fileStorageProperties.getUploadDir()
+                        + "\\homework"
+                        + homeworkId
+                        + "\\user"
+                        + userId;
+        val fileStorageLocation = Paths.get(pathString).toAbsolutePath().normalize();
 
         try {
             Files.createDirectories(fileStorageLocation);

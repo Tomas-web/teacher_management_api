@@ -5,6 +5,7 @@ import lombok.val;
 import management.teacher_management_api.drivers.api.payloads.chat.CallRoomDetails;
 import management.teacher_management_api.drivers.api.payloads.chat.ChatUser;
 import management.teacher_management_api.drivers.api.payloads.chat.Conversation;
+import management.teacher_management_api.infrastructure.hibernate.entities.CallRoom;
 import management.teacher_management_api.ports.persistence.CallRoomsDao;
 import management.teacher_management_api.ports.persistence.ConversationsDao;
 import management.teacher_management_api.ports.persistence.ConversationsMessagesDao;
@@ -36,7 +37,12 @@ public class GetConversationsUsecase {
                                             conversationsDao.getSecondParticipantId(
                                                     conversation.getId(), userId));
 
-                            val callRoom = callRoomsDao.find(sender.getId(), userId);
+                            CallRoom callRoom = callRoomsDao.find(sender.getId(), userId);
+
+                            if (callRoom == null) {
+                                callRoom = callRoomsDao.find(userId, sender.getId());
+                            }
+
                             return Conversation.builder()
                                     .id(Long.toString(conversation.getId()))
                                     .user(
